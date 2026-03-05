@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
-import axios from 'axios'
+import api from '../api.js'
 import { Mail, Phone, User, Send, MessageSquare, Instagram, Facebook } from 'lucide-vue-next'
 
 const settings = ref({
@@ -19,11 +19,9 @@ const form = reactive({
   message: ''
 })
 
-const API_URL = 'http://localhost:3031/api'
-
 const fetchSettings = async () => {
   try {
-    const res = await axios.get(`${API_URL}/settings`)
+    const res = await api.get('/settings')
     settings.value = res.data
   } catch (error) {
     console.error('Error fetching settings:', error)
@@ -32,7 +30,7 @@ const fetchSettings = async () => {
 
 const handleSubmit = async () => {
   try {
-    await axios.post(`${API_URL}/messages`, form)
+    await api.post('/messages', form)
     alert('تم استلام رسالتك بنجاح! سنتواصل معك قريباً.')
     // Reset form
     form.name = ''

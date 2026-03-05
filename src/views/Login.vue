@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '../api.js'
 import { Lock, ArrowRight, ShieldCheck } from 'lucide-vue-next'
 
 const passcode = ref('')
@@ -10,7 +10,7 @@ const router = useRouter()
 
 const handleLogin = async () => {
   try {
-    const res = await axios.post('http://localhost:3031/api/login', { passcode: passcode.value })
+    const res = await api.post('/login', { passcode: passcode.value })
     if (res.data.success) {
       localStorage.setItem('servrk_auth', res.data.token)
       router.push('/dashboard')

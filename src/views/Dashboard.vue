@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '../api.js'
 import { 
   MessageSquare, 
   Package, 
@@ -48,14 +48,12 @@ const packageForm = reactive({
   is_popular: false
 })
 
-const API_URL = 'http://localhost:3031/api'
-
 const fetchData = async () => {
   try {
     const [msgRes, pkgRes, settingsRes] = await Promise.all([
-      axios.get(`${API_URL}/messages`),
-      axios.get(`${API_URL}/packages`),
-      axios.get(`${API_URL}/settings`)
+      api.get('/messages'),
+      api.get('/packages'),
+      api.get('/settings')
     ])
     messages.value = msgRes.data
     packages.value = pkgRes.data
@@ -87,9 +85,9 @@ const openEditModal = (pkg) => {
 const handlePackageSubmit = async () => {
   try {
     if (modalMode.value === 'add') {
-      await axios.post(`${API_URL}/packages`, packageForm)
+      await api.post('/packages', packageForm)
     } else {
-      await axios.put(`${API_URL}/packages/${editingPackageId.value}`, packageForm)
+      await api.put(`/packages/${editingPackageId.value}`, packageForm)
     }
     showPackageModal.value = false
     fetchData()
@@ -101,7 +99,7 @@ const handlePackageSubmit = async () => {
 const deletePackage = async (id) => {
   if (confirm('هل أنت متأكد من حذف هذه الباقة؟')) {
     try {
-      await axios.delete(`${API_URL}/packages/${id}`)
+      await api.delete(`/packages/${id}`)
       fetchData()
     } catch (error) {
       alert('حدث خطأ أثناء الحذف')
@@ -111,7 +109,7 @@ const deletePackage = async (id) => {
 
 const markAsRead = async (id) => {
   try {
-    await axios.put(`${API_URL}/messages/${id}/read`)
+    await api.put(`/messages/${id}/read`)
     fetchData()
   } catch (error) {
     console.error('Error marking as read:', error)
@@ -120,7 +118,7 @@ const markAsRead = async (id) => {
 
 const updateSettings = async () => {
   try {
-    await axios.post(`${API_URL}/settings`, settings.value)
+    await api.post('/settings', settings.value)
     alert('تم حفظ الإعدادات بنجاح')
   } catch (error) {
     alert('حدث خطأ أثناء حفظ الإعدادات')

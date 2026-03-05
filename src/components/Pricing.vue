@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import api from '../api.js'
 import { Check } from 'lucide-vue-next'
 
 const tiers = ref([])
@@ -8,7 +8,7 @@ const loading = ref(true)
 
 const fetchPackages = async () => {
   try {
-    const res = await axios.get('http://localhost:3031/api/packages')
+    const res = await api.get('/packages')
     tiers.value = res.data.map(pkg => ({
       ...pkg,
       features: pkg.details.split('\n'),

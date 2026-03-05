@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import api from '../api.js'
 import { Mail, Phone, Instagram, Facebook } from 'lucide-vue-next'
 
 const settings = ref({
@@ -13,7 +13,7 @@ const settings = ref({
 
 const fetchSettings = async () => {
   try {
-    const res = await axios.get('http://localhost:3031/api/settings')
+    const res = await api.get('/settings')
     settings.value = res.data
   } catch (error) {
     console.error('Error fetching settings:', error)
