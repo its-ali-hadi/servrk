@@ -1,55 +1,27 @@
 <script setup>
-import { Check, Star, Shield, HelpCircle, HardDrive } from 'lucide-vue-next'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { Check } from 'lucide-vue-next'
 
-const tiers = [
-  {
-    name: 'الباقة الخفيفة',
-    price: '300',
-    description: 'للمبتدئين والعائلات الصغيرة التي تريد حفظ الصور فقط.',
-    features: [
-      'سعة تخزينية 2 تيرا بايت',
-      'خدمة Immich للصور',
-      'دعم لـ 5 مستخدمين',
-      'ربط 5 أجهزة موبايل',
-      'تحديثات تلقائية مجانية',
-      'دعم فني سنة واحدة'
-    ],
-    recommended: false,
-    color: '#ff8c00'
-  },
-  {
-    name: 'الباقة المتوسطة',
-    price: '500',
-    description: 'باقة متكاملة للمنزل الذكي وأفلام 4K والملفات.',
-    features: [
-      'سعة تخزينية 8 تيرا بايت',
-      'Immich + Jellyfin + Nextcloud',
-      'مكتبة أفلام UHD جاهزة وبدون اشتراكات',
-      'دعم لـ 20 مستخدم',
-      'ربط عدد غير محدود من الأجهزة',
-      'دعم فني وتقني مدى الحياة!',
-      'ضمان شامل للأجهزة والقطع'
-    ],
-    recommended: true,
-    color: '#ff3d00'
-  },
-  {
-    name: 'باقة المحترفين والشركات',
-    price: '1000',
-    description: 'أداء جبار لشركات الإدارة، العمل عن بعد، وتخزين مكثف.',
-    features: [
-      'سعة تخزينية 20 تيرا بايت (RAID آمن)',
-      'كل الخدمات السابقة بلس+',
-      'سيرفر إدارة المشاريع والمهام',
-      'نسخ احتياطي خارجي Off-site آلي',
-      'معالج فائق السرعة للمعالجة الثقيلة',
-      'دعم فني VIP سريع (أقل من ساعة)',
-      'زيارة صيانة دورية مجانية'
-    ],
-    recommended: false,
-    color: '#ffd700'
+const tiers = ref([])
+const loading = ref(true)
+
+const fetchPackages = async () => {
+  try {
+    const res = await axios.get('http://localhost:3031/api/packages')
+    tiers.value = res.data.map(pkg => ({
+      ...pkg,
+      features: pkg.details.split('\n'),
+      recommended: pkg.is_popular === 1
+    }))
+  } catch (error) {
+    console.error('Error fetching packages:', error)
+  } finally {
+    loading.value = false
   }
-]
+}
+
+onMounted(fetchPackages)
 </script>
 
 <template>
@@ -60,8 +32,12 @@ const tiers = [
       <p class="pricing-intro">اشتري لمرة واحدة، واحصل على دعم فني وتقني مدى الحياة.</p>
     </div>
 
-    <div class="container pricing-grid">
-      <div v-for="(t, i) in tiers" :key="i" 
+    <div v-if="loading" class="container text-center">
+      <p>جاري تحميل الباقات...</p>
+    </div>
+
+    <div v-else class="container pricing-grid">
+      <div v-for="(t, i) in tiers" :key="t.id" 
            class="glass pricing-card hover-lift" 
            :class="{ recommended: t.recommended }" 
            data-aos="fade-up" :data-aos-delay="i * 200">
@@ -70,7 +46,6 @@ const tiers = [
         
         <div class="card-header">
           <h3>{{ t.name }}</h3>
-          <p class="tier-desc">{{ t.description }}</p>
         </div>
         
         <div class="price-container">
@@ -122,7 +97,7 @@ const tiers = [
   padding: 4rem 2.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   border: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
 }
@@ -157,14 +132,8 @@ const tiers = [
   margin-bottom: 1rem;
 }
 
-.tier-desc {
-  font-size: 1rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
 .price-container {
-  margin: 3rem 0;
+  margin: 2rem 0;
 }
 
 .price {
@@ -177,7 +146,9 @@ const tiers = [
 
 .tier-features {
   list-style: none;
-  margin-bottom: 3.5rem;
+  margin-bottom: 2.5rem;
+  text-align: right;
+  flex: 1;
 }
 
 .tier-features li {
@@ -194,6 +165,7 @@ const tiers = [
   background: rgba(255, 140, 0, 0.1);
   border-radius: 50%;
   padding: 3px;
+  flex-shrink: 0;
 }
 
 .btn-block { width: 100%; justify-content: center; }

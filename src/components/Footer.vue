@@ -1,5 +1,26 @@
 <script setup>
-import { Mail, Phone, Instagram, Twitter, Github } from 'lucide-vue-next'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { Mail, Phone, Instagram, Facebook } from 'lucide-vue-next'
+
+const settings = ref({
+  phone: '',
+  email: '',
+  instagram: '',
+  facebook: '',
+  tiktok: ''
+})
+
+const fetchSettings = async () => {
+  try {
+    const res = await axios.get('http://localhost:3031/api/settings')
+    settings.value = res.data
+  } catch (error) {
+    console.error('Error fetching settings:', error)
+  }
+}
+
+onMounted(fetchSettings)
 </script>
 
 <template>
@@ -9,9 +30,13 @@ import { Mail, Phone, Instagram, Twitter, Github } from 'lucide-vue-next'
         <h3 class="gradient-text font-en">SERVRK</h3>
         <p>نحن نحول منزلك إلى مساحة ذكية وآمنة. متخصصون في حلول التخزين السحابي الخاص والسيرفرات المنزلية للأفراد والشركات.</p>
         <div class="social-links">
-          <a href="#"><Instagram /></a>
-          <a href="#"><Twitter /></a>
-          <a href="#"><Github /></a>
+          <a :href="settings.instagram" target="_blank"><Instagram /></a>
+          <a :href="settings.facebook" target="_blank"><Facebook /></a>
+          <a :href="settings.tiktok" target="_blank">
+            <svg viewBox="0 0 24 24" style="width: 20px; fill: currentColor;">
+              <path d="M12.525.02c1.31-.032 2.612-.019 3.91-.019.22 2.27 1.155 4.39 2.89 5.86.046.29.133.565.176.862-1.352-.026-2.704-.019-4.053-.01v10.518c.008 1.464-.53 3.016-1.69 3.985-1.574 1.34-3.95 1.565-5.698.544-2.126-1.258-2.67-4.225-1.07-6.108 1.144-1.39 3.123-1.928 4.792-1.325.02 1.353.052 2.705.074 4.056-.91-.497-2.185-.383-2.9 0.413-1.066 1.145-.25 3.155 1.25 3.323 1.053.116 2.18-.54 2.316-1.636.035-4.48.016-8.96.015-13.44.02-.998.014-2 .01-3.003h1.006z"/>
+            </svg>
+          </a>
         </div>
       </div>
       
@@ -25,24 +50,23 @@ import { Mail, Phone, Instagram, Twitter, Github } from 'lucide-vue-next'
         </ul>
       </div>
 
-      <div class="footer-contact" id="contact">
+      <div class="footer-contact">
         <h4>تواصل معنا</h4>
         <div class="contact-item">
           <Phone :size="18" />
-          <span>+966 5XX XXX XXX</span>
+          <span>{{ settings.phone }}</span>
         </div>
         <div class="contact-item">
           <Mail :size="18" />
-          <span>hello@servrk.com</span>
+          <span>{{ settings.email }}</span>
         </div>
-        <p class="mt-4">المملكة العربية السعودية <br>الرياض - المنطقة الإدارية</p>
+        <p class="mt-4">العراق - بغداد</p>
       </div>
     </div>
     
     <div class="footer-bottom">
       <div class="container bottom-flex">
         <p>&copy; 2024 SERVRK - جميع الحقوق محفوظة</p>
-        <p>صنع بحب لخدمة التقنية العربية</p>
       </div>
     </div>
   </footer>

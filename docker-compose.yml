@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./server
+    container_name: servrk-backend
+    ports:
+      - "3031:3031"
+    volumes:
+      - ./server/database.db:/app/database.db
+    restart: always
+
+  frontend:
+    build: .
+    container_name: servrk-frontend
+    ports:
+      - "3030:80"
+    depends_on:
+      - backend
+    restart: always

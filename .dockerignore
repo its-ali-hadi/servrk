@@ -4,5 +4,8 @@ dist
 .vscode
 .gitignore
 Dockerfile
+docker-compose.yml
+server/database.db
 README.md
 npm-debug.log
+.DS_Store
